@@ -1,0 +1,23 @@
+# Salesforce DX local/tooling artifacts
+.sfdx/
+.sf/
+.localdevserver/
+deploy-options.json
+
+# Manifest generated from org (regenerate as needed; keep out of source control by default)
+# manifest/
+
+# Logs & debug
+*.log
+
+# LWC / Node
+node_modules/
+**/lwc/jsconfig.json
+**/.eslintrc.json
+coverage/
+.nyc_output/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+*~
