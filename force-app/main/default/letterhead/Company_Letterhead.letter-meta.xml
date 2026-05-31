@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Letterhead xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <backgroundColor>#FFFFFF</backgroundColor>
+    <bodyColor>#FFFFFF</bodyColor>
+    <bottomLine>
+        <color>#0070D2</color>
+        <height>2</height>
+    </bottomLine>
+    <description>5S Infusion branded letterhead</description>
+    <footer>
+        <backgroundColor>#FFFFFF</backgroundColor>
+        <height>40</height>
+        <horizontalAlignment>None</horizontalAlignment>
+        <verticalAlignment>None</verticalAlignment>
+    </footer>
+    <header>
+        <backgroundColor>#FFFFFF</backgroundColor>
+        <height>100</height>
+        <horizontalAlignment>Center</horizontalAlignment>
+        <logo>Branding/Company_Logo</logo>
+        <verticalAlignment>Middle</verticalAlignment>
+    </header>
+    <middleLine>
+        <color>#0070D2</color>
+        <height>2</height>
+    </middleLine>
+    <name>Company Letterhead</name>
+    <topLine>
+        <color>#0070D2</color>
+        <height>2</height>
+    </topLine>
+</Letterhead>
