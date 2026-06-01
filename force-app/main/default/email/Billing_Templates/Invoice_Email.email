@@ -1,0 +1,37 @@
+<messaging:emailTemplate subject="Invoice {!relatedTo.Name} from 5S Infusion" recipientType="Contact" relatedToType="Invoice__c">
+<messaging:htmlEmailBody>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;color:#2b2b2b;padding:24px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e8ee;">
+    <tr><td style="background:#0098d8;padding:18px 28px;">
+        <span style="color:#ffffff;font-size:20px;font-weight:bold;letter-spacing:2px;">INVOICE</span>
+    </td></tr>
+    <tr><td style="padding:28px;">
+        <p style="font-size:15px;margin:0 0 14px 0;">Dear {!recipient.FirstName},</p>
+        <p style="font-size:14px;line-height:1.55;margin:0 0 18px 0;">Please find your invoice <strong>{!relatedTo.Name}</strong> attached. A summary is below.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin:0 0 18px 0;">
+            <tr><td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #eceef2;">Invoice Number</td><td align="right" style="padding:7px 0;border-bottom:1px solid #eceef2;"><strong>{!relatedTo.Name}</strong></td></tr>
+            <tr><td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #eceef2;">Invoice Date</td><td align="right" style="padding:7px 0;border-bottom:1px solid #eceef2;"><apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!relatedTo.Invoice_Date__c}"/></apex:outputText></td></tr>
+            <tr><td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #eceef2;">Due Date</td><td align="right" style="padding:7px 0;border-bottom:1px solid #eceef2;"><apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!relatedTo.Due_Date__c}"/></apex:outputText></td></tr>
+            <tr><td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #eceef2;">Total Hours</td><td align="right" style="padding:7px 0;border-bottom:1px solid #eceef2;"><apex:outputText value="{0,number,0.##}"><apex:param value="{!relatedTo.Total_Hours__c}"/></apex:outputText></td></tr>
+            <tr><td style="padding:11px 10px;background:#0098d8;color:#ffffff;"><strong>Amount Due</strong></td><td align="right" style="padding:11px 10px;background:#0098d8;color:#ffffff;"><strong>$<apex:outputText value="{0,number,###,##0.00}"><apex:param value="{!relatedTo.Balance__c}"/></apex:outputText></strong></td></tr>
+        </table>
+        <p style="font-size:13px;color:#555555;line-height:1.5;margin:0 0 22px 0;">Terms: <strong>{!relatedTo.Payment_Terms__c}</strong>.</p>
+        <p style="font-size:14px;margin:0 0 24px 0;">Thank you for your business.</p>
+
+        <table cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e5e8ee;">
+            <tr><td style="padding-top:16px;">
+                <div style="font-size:14px;font-weight:bold;font-style:italic;color:#1a1a1a;">Liam Jeong</div>
+                <div style="font-size:12px;color:#444444;">Founder &amp; President | Salesforce Solution Designer</div>
+                <div style="margin:12px 0 6px 0;"><img src="https://raw.githubusercontent.com/ArchLiam/5SInfusion/logo/Company_Logo.png" alt="5S Infusion" width="150" style="display:block;border:0;"/></div>
+                <div style="font-size:14px;font-weight:bold;color:#0098d8;">5S Infusion</div>
+                <div style="font-size:11px;color:#555555;letter-spacing:0.3px;">Salesforce | Strategic | Systematic | Secure | Scalable</div>
+                <div style="font-size:12px;color:#555555;font-style:italic;margin-top:8px;line-height:1.4;">&#10013;&#160; &#8220;Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.&#8221;</div>
+            </td></tr>
+        </table>
+    </td></tr>
+</table>
+</td></tr>
+</table>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

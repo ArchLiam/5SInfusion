@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount__c</fullName>
+    <label>Amount</label>
+    <type>Currency</type>
+    <formula>Hours__c * Rate__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <precision>16</precision>
+    <scale>2</scale>
+    <description>Line amount (Hours x Rate). Rolls up to the Invoice Subtotal.</description>
+</CustomField>

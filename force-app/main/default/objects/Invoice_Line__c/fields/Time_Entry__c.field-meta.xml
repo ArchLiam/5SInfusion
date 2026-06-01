@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Time_Entry__c</fullName>
+    <label>Time Entry</label>
+    <type>Lookup</type>
+    <referenceTo>Time_Entry__c</referenceTo>
+    <relationshipLabel>Invoice Lines</relationshipLabel>
+    <relationshipName>Invoice_Lines</relationshipName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <required>false</required>
+    <description>Source time entry this line was generated from (null for manual lines).</description>
+</CustomField>
