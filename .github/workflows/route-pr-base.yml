@@ -1,0 +1,51 @@
+name: Route PR base (5sinfusDev → uat → main)
+
+# Enforces the promotion flow:
+#   * PRs from 5sinfusDev are retargeted to  uat
+#   * PRs from uat        are retargeted to  main
+# Other source branches are left untouched.
+#
+# Uses pull_request_target so the workflow file + write token come from the
+# BASE branch. Because a mis-targeted PR (e.g. 5sinfusDev → main) has its base
+# on the default branch (main), this file living on `main` is enough to catch
+# and correct it. The job never checks out PR code, so pull_request_target is
+# safe here.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, edited]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  retarget:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Route PR base by source branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+
+          case "$HEAD_REF" in
+            5sinfusDev) desired="uat" ;;
+            uat)        desired="main" ;;
+            *)
+              echo "Source branch '$HEAD_REF' has no routing rule; leaving base '$BASE_REF' unchanged."
+              exit 0
+              ;;
+          esac
+
+          if [ "$BASE_REF" = "$desired" ]; then
+            echo "PR #$PR_NUMBER from '$HEAD_REF' already targets '$desired'. Nothing to do."
+            exit 0
+          fi
+
+          echo "Retargeting PR #$PR_NUMBER: base '$BASE_REF' → '$desired' (source '$HEAD_REF')."
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --base "$desired"
