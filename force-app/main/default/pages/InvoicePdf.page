@@ -1,0 +1,152 @@
+<apex:page standardController="Invoice__c" extensions="InvoicePdfController"
+           renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false"
+           applyHtmlTag="false" applyBodyTag="false" cache="false">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style type="text/css">
+    @page { margin: 1.5cm; }
+    body { font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; font-size: 11px; color: #2b2b2b; line-height: 1.45; }
+    .doc-title { font-size: 34px; font-weight: bold; letter-spacing: 6px; color: #0098d8; text-align: right; }
+    .meta { width: 100%; margin-top: 12px; }
+    .meta td { padding: 2px 0; font-size: 11px; }
+    .meta .label { color: #9aa0aa; padding-right: 14px; text-align: right; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+    .rule { border-top: 2px solid #0098d8; margin-top: 16px; font-size: 1px; line-height: 1px; }
+    .section-label { font-size: 9px; color: #9aa0aa; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .billto { font-size: 12px; line-height: 1.5; }
+    table.lines { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    table.lines th { background: #0098d8; color: #ffffff; font-size: 9px; text-transform: uppercase;
+                     letter-spacing: 0.7px; padding: 9px 10px; text-align: left; }
+    table.lines th.num, table.lines td.num { text-align: right; }
+    table.lines td { padding: 9px 10px; border-bottom: 1px solid #eceef2; font-size: 11px; page-break-inside: avoid; }
+    table.totals { width: 46%; margin-left: 54%; border-collapse: collapse; margin-top: 16px; }
+    table.totals td { padding: 7px 10px; font-size: 12px; }
+    table.totals td.label { text-align: right; color: #6b7280; }
+    table.totals td.num { text-align: right; }
+    table.totals tr.grand td { font-weight: bold; font-size: 14px; color: #ffffff; background: #0098d8; }
+    table.totals tr.balance td { font-weight: bold; color: #0098d8; border-top: 1px solid #e0e3e8; }
+    .notes { margin-top: 26px; font-size: 11px; color: #444444; }
+    .footer { margin-top: 32px; text-align: center; font-size: 9px; color: #9aa0aa; letter-spacing: 0.4px; }
+    .tagline { margin-top: 8px; font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 1.4px; }
+    .verse { margin-top: 14px; text-align: center; font-size: 9px; color: #9aa0aa; font-style: italic; letter-spacing: 0.3px; }
+</style>
+</head>
+<body>
+
+    <!-- Header -->
+    <table style="width:100%; border-collapse:collapse;">
+        <tr>
+            <td style="vertical-align:top; width:50%;">
+                <apex:image url="{!$Resource.Company_Logo}" width="180" alt="5S Infusion"/>
+                <div class="tagline">Salesforce&#160;&#160;|&#160;&#160;Strategic&#160;&#160;|&#160;&#160;Systematic&#160;&#160;|&#160;&#160;Secure&#160;&#160;|&#160;&#160;Scalable</div>
+            </td>
+            <td style="vertical-align:top; width:50%;">
+                <div class="doc-title">INVOICE</div>
+                <table class="meta">
+                    <tr><td class="label">Invoice #</td><td>{!invoice.Name}</td></tr>
+                    <tr><td class="label">Invoice Date</td>
+                        <td><apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!invoice.Invoice_Date__c}"/></apex:outputText></td></tr>
+                    <tr><td class="label">Due Date</td>
+                        <td><apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!invoice.Due_Date__c}"/></apex:outputText></td></tr>
+                    <tr><td class="label">Terms</td><td>{!invoice.Payment_Terms__c}</td></tr>
+                    <tr><td class="label">Status</td><td>{!invoice.Status__c}</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <div class="rule">&#160;</div>
+
+    <!-- Bill To -->
+    <div style="margin-top:18px;">
+        <div class="section-label">Bill To</div>
+        <div class="billto">
+            <strong>{!invoice.Account__r.Name}</strong><br/>
+            <apex:outputPanel rendered="{!invoice.Billing_Contact__c != null}">
+                Attn: {!invoice.Billing_Contact__r.Name}<br/>
+            </apex:outputPanel>
+            <apex:outputText rendered="{!invoice.Account__r.BillingStreet != null}" value="{!invoice.Account__r.BillingStreet}"/>
+            <apex:outputPanel rendered="{!invoice.Account__r.BillingStreet != null}"><br/></apex:outputPanel>
+            {!invoice.Account__r.BillingCity}<apex:outputText rendered="{!invoice.Account__r.BillingState != null}" value=", {!invoice.Account__r.BillingState}"/> {!invoice.Account__r.BillingPostalCode}<br/>
+            {!invoice.Account__r.BillingCountry}
+        </div>
+    </div>
+
+    <!-- Service period -->
+    <apex:outputPanel rendered="{!invoice.Service_Period_Start__c != null}">
+        <div style="margin-top:14px; font-size:11px; color:#6b7280;">
+            Service period:
+            <apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!invoice.Service_Period_Start__c}"/></apex:outputText>
+            &#8211;
+            <apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!invoice.Service_Period_End__c}"/></apex:outputText>
+        </div>
+    </apex:outputPanel>
+
+    <!-- Line items -->
+    <table class="lines">
+        <thead>
+            <tr>
+                <th style="width:20%;">Service Period</th>
+                <th class="num" style="width:7%;">Days</th>
+                <th style="width:33%;">Description</th>
+                <th class="num" style="width:12%;">Hours</th>
+                <th class="num" style="width:13%;">Rate</th>
+                <th class="num" style="width:15%;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <apex:repeat value="{!lines}" var="ln">
+            <tr>
+                <td><apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!ln.Service_Start_Date__c}"/></apex:outputText> &#8211; <apex:outputText value="{0,date,MMM d, yyyy}"><apex:param value="{!ln.Service_End_Date__c}"/></apex:outputText></td>
+                <td class="num"><apex:outputText value="{0,number,0}"><apex:param value="{!ln.Days__c}"/></apex:outputText></td>
+                <td>{!ln.Description__c}</td>
+                <td class="num"><apex:outputText value="{0,number,0.00}"><apex:param value="{!ln.Hours__c}"/></apex:outputText></td>
+                <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!ln.Rate__c}"/></apex:outputText></td>
+                <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!ln.Amount__c}"/></apex:outputText></td>
+            </tr>
+            </apex:repeat>
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <table class="totals">
+        <apex:outputPanel rendered="{!invoice.Tax_Amount__c > 0}">
+        <tr>
+            <td class="label">Tax (<apex:outputText value="{0,number,0.##}"><apex:param value="{!invoice.Tax_Rate__c}"/></apex:outputText>%)</td>
+            <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!invoice.Tax_Amount__c}"/></apex:outputText></td>
+        </tr>
+        </apex:outputPanel>
+        <tr class="grand">
+            <td class="label">Total &#8226; <apex:outputText value="{0,number,0.##}"><apex:param value="{!invoice.Total_Hours__c}"/></apex:outputText> hrs</td>
+            <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!invoice.Total__c}"/></apex:outputText></td>
+        </tr>
+        <apex:outputPanel rendered="{!invoice.Amount_Paid__c > 0}">
+        <tr>
+            <td class="label">Amount Paid</td>
+            <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!invoice.Amount_Paid__c}"/></apex:outputText></td>
+        </tr>
+        <tr class="balance">
+            <td class="label">Balance Due</td>
+            <td class="num"><apex:outputText value="{0,number,currency}"><apex:param value="{!invoice.Balance__c}"/></apex:outputText></td>
+        </tr>
+        </apex:outputPanel>
+    </table>
+
+    <!-- Notes -->
+    <apex:outputPanel rendered="{!invoice.Notes__c != null}">
+        <div class="notes">
+            <div class="section-label">Notes</div>
+            {!invoice.Notes__c}
+        </div>
+    </apex:outputPanel>
+
+    <div class="footer">
+        Thank you for your business. &#160; Please remit payment by the due date referencing invoice {!invoice.Name}.
+    </div>
+
+    <div class="verse">
+        &#8224;&#160; &#8220;Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.&#8221;
+    </div>
+
+</body>
+</html>
+</apex:page>
